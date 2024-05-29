@@ -8,7 +8,7 @@
    -->
   <div class="departments">
     <el-card>
-      <div class="main">
+      <div v-loading="loading" class="main">
         <div class="top" style="margin-bottom: 20px">
           <div class="name">东软</div>
           <div class="manager">负责人</div>
@@ -66,6 +66,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       list: [],
       initList: []
     }
@@ -75,7 +76,9 @@ export default {
   },
   methods: {
     async getData() {
+      this.loading = true
       const res = await companyDepartment()
+      this.loading = false
       this.initList = res.data.depts
       this.list = this.changeData(res.data.depts, '')
       console.table(res.data.depts)

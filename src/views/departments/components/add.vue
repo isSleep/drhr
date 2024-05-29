@@ -36,6 +36,9 @@
                          label:显示的内容 v-model="form."
                          value:选中该项后的值
           -->
+        <!-- 1:获取部门员工列表 定义api,导入api,调用api
+             2：存储并渲染员工列表  获取数据并存储渲染
+        -->
         <el-select v-model="form.manager">
           <el-option label="男" value="1" />
           <el-option label="女" value="0" />
@@ -50,6 +53,7 @@
         />
       </el-form-item>
     </el-form>
+
     <template #footer>
       <div style="text-align: center">
         <el-button>取消</el-button>
@@ -59,7 +63,11 @@
           2:调用成功 提示一下 关闭弹窗 刷新父级列表
           3：新增弹框内的表单数据需要清空一下，
          -->
-        <el-button type="primary" @click="submit">确定</el-button>
+        <el-button
+          type="primary"
+          :loading="loading"
+          @click="submit"
+        >确定</el-button>
       </div>
     </template>
   </el-dialog>
@@ -75,6 +83,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       show: false,
       test: '1',
       form: {
@@ -87,7 +96,26 @@ export default {
       rules: {
         name: [
           { required: true, message: '请输入部门名称', trigger: 'change' },
-          { min: 1, max: 50, message: '请输入1-50个字符', trigger: 'change' }
+          { min: 1, max: 50, message: '请输入1-50个字符', trigger: 'change' },
+          {
+            // 需求：当前要添加的部门的同级部门不能产生同名的
+            // 1：找出当前要添加的部门的全部同级部门
+            // 2:比较找出的同级部门每一项的name不能与value相同
+            validator: (rule, value, callback) => {
+              const newArr = this.initList.filter((item) => {
+                return item.pid === this.form.pid
+              })
+              const bol = newArr.every((item) => {
+                return item.name !== value
+              })
+              if (bol) {
+                callback()
+              } else {
+                callback(new Error('重复的部门名称:' + value))
+              }
+            },
+            trigger: 'change'
+          }
         ],
         code: [
           { required: true, message: '请输入部门编码', trigger: 'change' },
@@ -120,11 +148,24 @@ export default {
       }
     }
   },
+  created() {
+    // this.getUserList()
+  },
   methods: {
+     // 获取员工列表
+     async getUserList() {
+      if (this.userList.length === 0) {
+        const res = await sysUserSimple()
+        this.userList = res.data
+        console.log('员工列表', res)
+      }
+    },
     submit() {
       this.$refs.form.validate(async(result) => {
         if (result) {
+          this.loading = true
           await companyDepartmentPost(this.form)
+          this.loading = false
           // 提示用户
           this.$message.success('新增部门成功')
           // 弹窗关闭
