@@ -1,5 +1,9 @@
 <template>
-  <el-dialog title="新增部门" width="600px" :visible.sync="show">
+  <el-dialog
+    :title="mode === 'add' ? '新增部门' : '编辑部门'"
+    width="600px"
+    :visible.sync="show"
+  >
     <!-- el-form  label-width:设置整个标题宽度
             el-form-item
                  label:标题
@@ -83,6 +87,7 @@ export default {
   },
   data() {
     return {
+      mode: 'add', // add:新增  edit:编辑
       loading: false,
       show: false,
       test: '1',
@@ -152,8 +157,8 @@ export default {
     // this.getUserList()
   },
   methods: {
-     // 获取员工列表
-     async getUserList() {
+    // 获取员工列表
+    async getUserList() {
       if (this.userList.length === 0) {
         const res = await sysUserSimple()
         this.userList = res.data

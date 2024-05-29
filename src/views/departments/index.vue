@@ -5,6 +5,14 @@
       2:导入api
       3:调用api存储数据,进入页面能执行的就是生命周期（beforeCreate,created,beforeMount,mounted）
       4：渲染数据
+
+      改：
+      1：点击修改打开弹框（新增组件共用弹框）
+      2：修改弹框组件的标题：编辑部门
+      3：弹框组件内数据回显
+      4：表单验证调整
+      5：调用编辑接口api(定义导入与调用api) =>分场景调用：新增部门与编辑部门
+      6：调用成功：1：提示  2：关闭弹框  3：清空表单数据与验证 4：刷新父级列表
    -->
   <div class="departments">
     <el-card>
@@ -43,7 +51,9 @@
                     <el-dropdown-item
                       @click.native="addEvent2(data.id)"
                     >添加子部门</el-dropdown-item>
-                    <el-dropdown-item>编辑部门</el-dropdown-item>
+                    <el-dropdown-item
+                      @click.native="editEvent(data)"
+                    >编辑部门</el-dropdown-item>
                     <el-dropdown-item>删除部门</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -100,6 +110,8 @@ export default {
       this.$refs.add.show = true
       // 修改要添加项的pid的值
       this.$refs.add.form.pid = ''
+      // 修改mode场景值
+      this.$refs.add.mode = 'add'
     },
     // 新增事件2
     addEvent2(id) {
@@ -107,6 +119,18 @@ export default {
       this.$refs.add.show = true
       // 修改要添加项的pid的值
       this.$refs.add.form.pid = id
+      // 修改mode场景值
+      this.$refs.add.mode = 'add'
+    },
+    // 编辑部门
+    editEvent(data) {
+      // 打开弹窗
+      this.$refs.add.show = true
+      // 修改mode场景值
+      this.$refs.add.mode = 'edit'
+      // 回显数据
+      this.$refs.add.form = JSON.parse(JSON.stringify(data))
+      console.log(data)
     }
   }
 }
