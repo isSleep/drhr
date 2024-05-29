@@ -40,7 +40,9 @@
                 <div class="option">操作 <i class="el-icon-arrow-down" /></div>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item>添加子部门</el-dropdown-item>
+                    <el-dropdown-item
+                      @click.native="addEvent2(data.id)"
+                    >添加子部门</el-dropdown-item>
                     <el-dropdown-item>编辑部门</el-dropdown-item>
                     <el-dropdown-item>删除部门</el-dropdown-item>
                   </el-dropdown-menu>
@@ -93,6 +95,15 @@ export default {
     addEvent() {
       // 打开弹窗
       this.$refs.add.show = true
+      // 修改要添加项的pid的值
+      this.$refs.add.form.pid = ''
+    },
+    // 新增事件2
+    addEvent2(id) {
+      // 打开弹窗
+      this.$refs.add.show = true
+      // 修改要添加项的pid的值
+      this.$refs.add.form.pid = id
     }
   }
 }
