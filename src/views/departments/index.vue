@@ -54,7 +54,7 @@
       </div>
     </el-card>
     <!-- 新增弹框组件 -->
-    <Add ref="add" :init-list="initList" />
+    <Add ref="add" :init-list="initList" @getData="getData" />
   </div>
 </template>
 <script>

@@ -53,12 +53,19 @@
     <template #footer>
       <div style="text-align: center">
         <el-button>取消</el-button>
+        <!--
+          新增功能实现
+          1：调用新增接口  定义接口api  导入api  在表单验证通过后调用api
+          2:调用成功 提示一下 关闭弹窗 刷新父级列表
+          3：新增弹框内的表单数据需要清空一下，
+         -->
         <el-button type="primary" @click="submit">确定</el-button>
       </div>
     </template>
   </el-dialog>
 </template>
 <script>
+import { sysUserSimple, companyDepartmentPost } from '@/api/departments'
 export default {
   props: {
     initList: {
@@ -115,7 +122,18 @@ export default {
   },
   methods: {
     submit() {
-      this.$refs.form.validate((result) => {
+      this.$refs.form.validate(async(result) => {
+        if (result) {
+          await companyDepartmentPost(this.form)
+          // 提示用户
+          this.$message.success('新增部门成功')
+          // 弹窗关闭
+          this.show = false
+          // 刷新父级列表（调用父级的一个getData方法）
+          this.$emit('getData')
+          // 重置表单
+          this.$refs.form.resetFields()
+        }
         console.log(result)
       })
     }
