@@ -21,3 +21,12 @@ export const companyDepartmentPost = data => {
     data
   })
 }
+
+// 编辑部门
+export const companyDepartmentPut = data => {
+  return request({
+    url: `/company/department/${data.id}`,
+    method: 'put',
+    data
+  })
+}

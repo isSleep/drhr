@@ -3,6 +3,7 @@
     :title="mode === 'add' ? '新增部门' : '编辑部门'"
     width="600px"
     :visible.sync="show"
+    @close="closeEvent"
   >
     {{ form }}
     <!-- el-form  label-width:设置整个标题宽度
@@ -68,17 +69,19 @@
           2:调用成功 提示一下 关闭弹窗 刷新父级列表
           3：新增弹框内的表单数据需要清空一下，
          -->
-        <el-button
-          type="primary"
-          :loading="loading"
-          @click="submit"
-        >确定</el-button>
+        <el-button type="primary" :loading="loading" @click="submit"
+          >确定</el-button
+        >
       </div>
     </template>
   </el-dialog>
 </template>
 <script>
-import { sysUserSimple, companyDepartmentPost } from '@/api/departments'
+import {
+  sysUserSimple,
+  companyDepartmentPost,
+  companyDepartmentPut
+} from '@/api/departments'
 export default {
   props: {
     initList: {
@@ -138,7 +141,7 @@ export default {
           { min: 1, max: 50, message: '请输入1-50个字符', trigger: 'change' },
           {
             validator: (rule, value, callback) => {
-    
+
               let bol
               if (this.mode === 'add') {
                 // 新增
@@ -194,19 +197,34 @@ export default {
       this.$refs.form.validate(async(result) => {
         if (result) {
           this.loading = true
-          await companyDepartmentPost(this.form)
+          if (this.mode === 'add') {
+            await companyDepartmentPost(this.form)
+            // 提示用户
+            this.$message.success('新增部门成功')
+          } else {
+            await companyDepartmentPut(this.form)
+            // 提示用户
+            this.$message.success('编辑部门成功')
+          }
           this.loading = false
-          // 提示用户
-          this.$message.success('新增部门成功')
           // 弹窗关闭
           this.show = false
           // 刷新父级列表（调用父级的一个getData方法）
           this.$emit('getData')
-          // 重置表单
-          this.$refs.form.resetFields()
         }
         console.log(result)
       })
+    },
+    closeEvent() {
+      // 重置表单
+      this.$refs.form.resetFields()
+      this.form = {
+        name: '', //	string	非必须		部门名称
+        code: '', //	string	非必须		部门编码，同级部门不可重复
+        manager: '', //	string	非必须		负责人名称
+        introduce: '', //	string	非必须		介绍
+        pid: '' //	string	非必须		父级部门ID
+      }
     }
   }
 }
