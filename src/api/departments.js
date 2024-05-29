@@ -22,6 +22,14 @@ export const companyDepartmentPost = data => {
   })
 }
 
+// 删除部门
+export const companyDepartmentDelete = id => {
+  return request({
+    url: `/company/department/${id}`,
+    method: 'delete'
+  })
+}
+
 // 编辑部门
 export const companyDepartmentPut = data => {
   return request({
