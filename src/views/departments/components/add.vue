@@ -4,6 +4,7 @@
     width="600px"
     :visible.sync="show"
   >
+    {{ form }}
     <!-- el-form  label-width:设置整个标题宽度
             el-form-item
                  label:标题
@@ -107,9 +108,19 @@ export default {
             // 1：找出当前要添加的部门的全部同级部门
             // 2:比较找出的同级部门每一项的name不能与value相同
             validator: (rule, value, callback) => {
-              const newArr = this.initList.filter((item) => {
-                return item.pid === this.form.pid
-              })
+              let newArr = []
+              if (this.mode === 'add') {
+                newArr = this.initList.filter((item) => {
+                  return item.pid === this.form.pid
+                })
+              } else {
+                const arr = this.initList.filter((item) => {
+                  return item.id !== this.form.id
+                })
+                newArr = arr.filter((item) => {
+                  return item.pid === this.form.pid
+                })
+              }
               const bol = newArr.every((item) => {
                 return item.name !== value
               })
@@ -127,13 +138,27 @@ export default {
           { min: 1, max: 50, message: '请输入1-50个字符', trigger: 'change' },
           {
             validator: (rule, value, callback) => {
-              // 需求：当前vlaue的值不与其它任意项的组织架构的code相同
-              // 1：拿到其它所有项的组织架构的数据
-              // 2:判断数组中的每一项的code是否与value相等
-              // 数组新方法：返回值= arr.every(item=> {return 条件})   每一项都满足需求，返回值为true,只要一个项不满足就返回false
-              const bol = this.initList.every((item) => {
-                return item.code !== value
-              })
+    
+              let bol
+              if (this.mode === 'add') {
+                // 新增
+                // 需求：当前vlaue的值不与其它任意项的组织架构的code相同
+                // 1：拿到其它所有项的组织架构的数据
+                // 2:判断数组中的每一项的code是否与value相等
+                // 数组新方法：返回值= arr.every(item=> {return 条件})   每一项都满足需求，返回值为true,只要一个项不满足就返回false
+                bol = this.initList.every((item) => {
+                  return item.code !== value
+                })
+              } else {
+                // 编辑
+                // 1:排除自己
+                const newArr = this.initList.filter((item) => {
+                  return item.id !== this.form.id
+                })
+                bol = newArr.every((item) => {
+                  return item.code !== value
+                })
+              }
               if (bol) {
                 callback()
               } else {
